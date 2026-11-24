@@ -13,6 +13,18 @@ now=$(curl -sL -A "$UA" "https://twitchtracker.com/channels/live/portuguese" \
 
 if [ -z "$now" ]; then echo "ERRO: nao consegui ler a lista"; exit 1; fi
 
+# Canais fixos (watch.txt): entram no monitoramento sempre que estiverem ao vivo
+if [ -f "$DIR/watch.txt" ]; then
+  while read -r ch; do
+    ch=$(echo "$ch" | tr -d '\r' | tr 'A-Z' 'a-z')
+    [ -z "$ch" ] && continue
+    echo "$now" | grep -qx "$ch" && continue
+    if curl -sL -A "$UA" "https://www.twitch.tv/$ch" | grep -q '"isLiveBroadcast":true'; then
+      now="$now"$'\n'"$ch"
+    fi
+  done < "$DIR/watch.txt"
+fi
+
 # Mantem no estado quem estava no top e ainda esta ao vivo (mesmo se caiu do top)
 still=""
 if [ -f "$STATE" ]; then
