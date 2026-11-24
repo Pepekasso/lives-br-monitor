@@ -1,0 +1,49 @@
+name: Checar lives BR
+
+on:
+  schedule:
+    - cron: "*/10 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: check-lives
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Rodar checagem
+        id: run
+        run: |
+          out=$(bash check.sh)
+          echo "$out"
+          ended=$(echo "$out" | grep '^ENDED ' | cut -d' ' -f2 | paste -sd ',' - | sed 's/,/, /g')
+          echo "ended=$ended" >> "$GITHUB_OUTPUT"
+
+      - name: Notificar no celular
+        if: steps.run.outputs.ended != ''
+        env:
+          TOPIC: ${{ secrets.NTFY_TOPIC }}
+          ENDED: ${{ steps.run.outputs.ended }}
+        run: |
+          first=$(echo "$ENDED" | cut -d',' -f1)
+          curl -s \
+            -H "Title: Live acabou" \
+            -H "Tags: tv" \
+            -H "Click: https://www.twitch.tv/$first/videos" \
+            --data-binary "Acabou: $ENDED. Quer transcrever? Abre o Claude e fala: pode transcrever a live de $first" \
+            "https://ntfy.sh/$TOPIC"
+
+      - name: Salvar estado
+        run: |
+          git config user.name "lives-bot"
+          git config user.email "lives-bot@users.noreply.github.com"
+          git add state.txt
+          git diff --cached --quiet || (git commit -m "estado" && git push)
