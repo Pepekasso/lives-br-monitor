@@ -1,4 +1,3 @@
 kick:bistecone
-kick:davyjones
 kick:gabepeixe
 twitch:alanzoka
