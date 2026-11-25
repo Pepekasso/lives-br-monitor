@@ -40,6 +40,7 @@ jobs:
           curl -s \
             -H "Title: Live acabou" \
             -H "Tags: tv" \
+            -H "Priority: high" \
             -H "Click: https://www.twitch.tv/$first/videos" \
             --data-binary "Acabou: $ENDED. Quer transcrever? Abre o Claude e fala: pode transcrever a live de $first" \
             "https://ntfy.sh/$TOPIC"
