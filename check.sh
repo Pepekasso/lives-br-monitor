@@ -11,7 +11,7 @@ now=$(curl -sL -A "$UA" "https://twitchtracker.com/channels/live/portuguese" \
   | grep -vE '^(games|clips|statistics|languages|subscribers|api|channels)$' \
   | awk '!seen[$0]++' | head -n "$TOP")
 
-if [ -z "$now" ]; then echo "ERRO: nao consegui ler a lista"; exit 1; fi
+if [ -z "$now" ]; then echo "ERRO: nao consegui ler a lista (HTTP $(curl -s -A "$UA" -o /dev/null -w "%{http_code}" "https://twitchtracker.com/channels/live/portuguese"))"; exit 1; fi
 
 # Canais fixos (watch.txt): entram no monitoramento sempre que estiverem ao vivo
 if [ -f "$DIR/watch.txt" ]; then

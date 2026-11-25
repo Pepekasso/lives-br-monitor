@@ -22,7 +22,7 @@ jobs:
       - name: Rodar checagem
         id: run
         run: |
-          out=$(bash check.sh)
+          out=$(bash check.sh) || { echo "$out"; exit 1; }
           echo "$out"
           ended=$(echo "$out" | grep '^ENDED ' | cut -d' ' -f2 | paste -sd ',' - | sed 's/,/, /g')
           echo "ended=$ended" >> "$GITHUB_OUTPUT"
