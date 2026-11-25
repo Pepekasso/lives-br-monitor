@@ -21,13 +21,10 @@ jobs:
 
       - name: Rodar checagem
         id: run
-        env:
-          TWITCH_CLIENT_ID: ${{ secrets.TWITCH_CLIENT_ID }}
-          TWITCH_CLIENT_SECRET: ${{ secrets.TWITCH_CLIENT_SECRET }}
         run: |
           out=$(bash check.sh) || { echo "$out"; exit 1; }
           echo "$out"
-          ended=$(echo "$out" | grep '^ENDED ' | cut -d' ' -f2 | paste -sd ',' - | sed 's/,/, /g')
+          ended=$(echo "$out" | grep '^ENDED ' | cut -d' ' -f2 | paste -sd ',' -)
           echo "ended=$ended" >> "$GITHUB_OUTPUT"
 
       - name: Notificar no celular
@@ -37,12 +34,15 @@ jobs:
           ENDED: ${{ steps.run.outputs.ended }}
         run: |
           first=$(echo "$ENDED" | cut -d',' -f1)
+          plat=${first%%:*}; canal=${first#*:}
+          if [ "$plat" = "kick" ]; then link="https://kick.com/$canal/videos"; else link="https://www.twitch.tv/$canal/videos"; fi
+          bonito=$(echo "$ENDED" | sed -E 's/twitch:([^,]+)/ (Twitch)/g; s/kick:([^,]+)/ (Kick)/g; s/,/, /g')
           curl -s \
             -H "Title: Live acabou" \
             -H "Tags: tv" \
             -H "Priority: high" \
-            -H "Click: https://www.twitch.tv/$first/videos" \
-            --data-binary "Acabou: $ENDED. Quer transcrever? Abre o Claude e fala: pode transcrever a live de $first" \
+            -H "Click: $link" \
+            --data-binary "Acabou: $bonito. Quer transcrever? Abre o Claude e fala: pode transcrever a live de $canal" \
             "https://ntfy.sh/$TOPIC"
 
       - name: Salvar estado
