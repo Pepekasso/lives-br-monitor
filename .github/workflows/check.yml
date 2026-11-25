@@ -36,7 +36,7 @@ jobs:
           first=$(echo "$ENDED" | cut -d',' -f1)
           plat=${first%%:*}; canal=${first#*:}
           if [ "$plat" = "kick" ]; then link="https://kick.com/$canal/videos"; else link="https://www.twitch.tv/$canal/videos"; fi
-          bonito=$(echo "$ENDED" | sed -E 's/twitch:([^,]+)/ (Twitch)/g; s/kick:([^,]+)/ (Kick)/g; s/,/, /g')
+          bonito=$(echo "$ENDED" | sed -E 's/twitch:([^,]+)/\1 (Twitch)/g; s/kick:([^,]+)/\1 (Kick)/g; s/,/, /g')
           curl -s \
             -H "Title: Live acabou" \
             -H "Tags: tv" \
