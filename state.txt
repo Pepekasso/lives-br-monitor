@@ -1,3 +1,4 @@
 kick:gabepeixe
 twitch:alanzoka
+twitch:facada
 twitch:paulinholokobr
