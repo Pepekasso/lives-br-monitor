@@ -1,5 +1,3 @@
-kick:davyjones
 kick:gabepeixe
 kick:paulinholokobr
-twitch:alanzoka
 twitch:facada
