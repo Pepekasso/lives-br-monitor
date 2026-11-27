@@ -1,4 +1,2 @@
 kick:bistecone
-kick:coringa
-kick:davyjones
 twitch:alanzoka
