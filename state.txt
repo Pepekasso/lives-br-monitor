@@ -1,2 +1,3 @@
 kick:bistecone
+kick:paulinholokobr
 twitch:alanzoka
